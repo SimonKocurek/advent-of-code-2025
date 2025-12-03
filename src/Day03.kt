@@ -1,5 +1,4 @@
 import java.math.BigInteger
-import java.util.Stack
 
 private const val BATTERIES = 12
 
