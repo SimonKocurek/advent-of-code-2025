@@ -44,7 +44,7 @@ fun main() {
 
                 batteries.add(digit)
                 val result = turnOnBatteries(line, offset = foundAt + 1, batteries = batteries)
-                batteries.removeAt(batteries.lastIndex)
+                batteries.pop()
 
                 result
             }
