@@ -30,13 +30,56 @@ fun main() {
         return result
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
+    fun part2(input: List<String>): BigInteger {
+        val numbers = input
+            .subList(0, input.size - 1)
+
+        val operands = input
+            .last()
+            .trim()
+            .split(WHITESPACE_REGEX)
+
+        var result = BigInteger.ZERO
+
+        var operandIdx = 0
+        var operation: BigInteger? = null
+        for (x in numbers[0].indices) {
+            var number = BigInteger.ZERO
+            for (y in numbers.indices) {
+                val char = numbers[y][x]
+                if (char.isDigit()) {
+                    number = (number * BigInteger.TEN) + char.digitToInt().toBigInteger()
+                }
+            }
+
+            // Empty column
+            if (number == BigInteger.ZERO) {
+                operandIdx++
+                result += operation ?: error("No operation")
+                operation = null
+                continue
+            }
+
+            if (operation == null) {
+                // first number
+                operation = number
+                continue
+            }
+
+            val operand = operands[operandIdx]
+            when (operand) {
+                "+" -> operation += number
+                "*" -> operation *= number
+            }
+        }
+
+        result += operation ?: error("No operation")
+        return result
     }
 
     val testInput = readInput("Day06_test")
     check(part1(testInput) == BigInteger("4277556"))
-//    check(part2(testInput) == BigInteger("14"))
+    check(part2(testInput) == BigInteger("3263827"))
 
     val input = readInput("Day06")
     part1(input).println()
