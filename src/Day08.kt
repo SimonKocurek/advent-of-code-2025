@@ -50,13 +50,47 @@ fun main() {
             .reduce { acc, curr -> acc * curr }
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
+    fun part2(input: List<String>): Long {
+        val positions = input
+            .map { it.split(",").map { num -> num.toLong() } }
+
+        val distances = PriorityQueue<Triple<Long, Int, Int>>(input.size * input.size) { a, b ->
+            a.first.compareTo(b.first)
+        }
+
+        for (i in positions.indices) {
+            val (x1, y1, z1) = positions[i]
+
+            for (j in (i + 1)..positions.lastIndex) {
+                val (x2, y2, z2) = positions[j]
+                val xDiff = x1 - x2
+                val yDiff = y1 - y2
+                val zDiff = z1 - z2
+                // We don't need to do sqrt, since the ordering will be the same, and we only care about comparisons
+                val distance = (xDiff * xDiff) + (yDiff * yDiff) + (zDiff * zDiff)
+                val entry = Triple(distance, i, j)
+                distances.add(entry)
+            }
+        }
+
+        val parents = IntArray(input.size) { it }
+        val sizes = IntArray(input.size) { 1 }
+        while (distances.isNotEmpty()) {
+            val (_, i, j) = distances.poll()
+            union(parents, sizes, i, j)
+
+            val components = parents.map { parent -> find(parents, parent) }.distinct().size
+            if (components == 1) {
+                return positions[i].first() * positions[j].first()
+            }
+        }
+
+        error("Could not connect all components")
     }
 
     val testInput = readInput("Day08_test")
     check(part1(testInput, connections = 10) == 40L)
-//    check(part2(testInput) == BigInteger("40"))
+    check(part2(testInput) == 25272L)
 
     val input = readInput("Day08")
     part1(input, connections = 1000).println()
