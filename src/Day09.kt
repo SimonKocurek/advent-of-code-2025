@@ -17,37 +17,37 @@ fun main() {
         val points = input.map { it.split(",").map(String::toLong) }
 
         val lines = points.zipWithNext() + listOf(points.last() to points.first())
-        val verticalLines = lines.filter { (p1, p2) -> p1[1] == p2[1] }
-        val horizontalLines = lines.filter { (p1, p2) -> p1[0] == p2[0] }
+        val verticalLines = lines.filter { (p1, p2) -> p1[0] == p2[0] }
+        val horizontalLines = lines.filter { (p1, p2) -> p1[1] == p2[1] }
 
         var result = 0L
         for (i in points.indices) {
             for (j in (i + 1)..points.lastIndex) {
-                val (boxY1, boxX1) = points[i]
-                val (boxY2, boxX2) = points[j]
+                val (boxX1, boxY1) = points[i]
+                val (boxX2, boxY2) = points[j]
 
-                val boxBottomEnd = min(boxY1, boxY2)
-                val boxTopEnd = max(boxY1, boxY2)
-                val boxLeftEnd = min(boxX1, boxX2)
-                val boxRightEnd = max(boxX1, boxX2)
+                val boxXStart = min(boxX1, boxX2)
+                val boxXEnd = max(boxX1, boxX2)
+                val boxYStart = min(boxY1, boxY2)
+                val boxYEnd = max(boxY1, boxY2)
 
                 val crossesVerticalLine = verticalLines.any { (p1, p2) ->
-                    // p1X == p2X
-                    val (p1Y, p1X) = p1
-                    val (p2Y, _) = p2
+                    val lineX = p1[0]
+                    val lineYStart = min(p1[1], p2[1])
+                    val lineYEnd = max(p1[1], p2[1])
 
-                    if (p1X <= boxLeftEnd || p1X >= boxRightEnd) {
+                    if (lineX !in (boxXStart + 1)..(boxXEnd - 1)) {
                         return@any false // Line is on different side of box
                     }
 
-                    if (max(p1Y, p2Y) > boxTopEnd || min(p1Y, p2Y) < boxBottomEnd) {
+                    if (lineYStart <= boxYStart && lineYEnd >= boxYEnd) {
+                        return@any true // Line crosses box completely
+                    }
+
+                    if (lineYEnd <= boxYStart || boxYEnd <= lineYStart) {
                         return@any false // Line is completely above or below box
                     }
-                    
-                    if () {
-                        
-                    }
-                    
+
                     return@any true // Line crosses or inside box
                 }
                 if (crossesVerticalLine) {
@@ -55,19 +55,21 @@ fun main() {
                 }
 
                 val crossesHorizontalLine = horizontalLines.any { (p1, p2) ->
-                    // p1Y == p2Y
-                    val (p1Y, p1X) = p1
-                    val (_, p2X) = p2
+                    val lineY = p1[1]
+                    val lineXStart = min(p1[0], p2[0])
+                    val lineXEnd = max(p1[0], p2[0])
 
-                    if (p1Y >= boxTopEnd || p1Y <= boxBottomEnd) {
+                    if (lineY !in (boxYStart + 1)..(boxYEnd - 1)) {
                         return@any false // Line is on different side of box
                     }
 
-                    if (max(p1X, p2X) > boxRightEnd || min(p1X, p2X) < boxLeftEnd) {
+                    if (lineXStart <= boxXStart && lineXEnd >= boxXEnd) {
+                        return@any true // Line crosses box completely
+                    }
+
+                    if (lineXEnd <= boxXStart || lineXStart >= boxXEnd) {
                         return@any false // Line is completely left or right of box
                     }
-                    
-                    // TODO
 
                     return@any true // Line crosses or inside box
                 }
@@ -75,7 +77,7 @@ fun main() {
                     continue
                 }
 
-                val area = (abs(boxY2 - boxY1) + 1) * (abs(boxX2 - boxX1) + 1)
+                val area = (abs(boxX2 - boxX1) + 1) * (abs(boxY2 - boxY1) + 1)
                 result = max(result, area)
             }
         }
