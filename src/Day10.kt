@@ -71,15 +71,15 @@ fun main() {
     // Shamelessly implemented using both a library **and** AI. :/
     fun part2(input: List<String>): Long {
         val parsedInput = input.map { machineDiagram ->
-            val machinieDiagramParts = machineDiagram
+            val machineDiagramParts = machineDiagram
                 .split(" ")
                 .map { it.trimBrackets() }
 
-            val buttons = machinieDiagramParts
-                .subList(1, machinieDiagramParts.size - 1)
+            val buttons = machineDiagramParts
+                .subList(1, machineDiagramParts.size - 1)
                 .map { button -> button.split(",").map { it.toInt() } }
 
-            val joltageRequirements = machinieDiagramParts.last().split(",").map { it.toInt() }
+            val joltageRequirements = machineDiagramParts.last().split(",").map { it.toInt() }
 
             Part2ParsedInput(
                 buttons = buttons,
