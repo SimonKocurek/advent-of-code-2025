@@ -89,6 +89,5 @@ fun main() {
 
     val input = readInput("Day11")
     part1(input).println()
-    val input2 = readInput("Day11_pt2")
-    part2(input2).println()
+    part2(input).println()
 }
